@@ -12,24 +12,26 @@ uploaded_file = st.file_uploader("Escolha o arquivo Excel 'Papeis da rede':", ty
 if uploaded_file is not None:
     # Pre processing
     data = pd.read_excel(uploaded_file, sheet_name='Dados', header=1)
-    data['Soma das métricas'] = data['Negociação'] + data['Portfólio'] + data['Relacional'] + data['Processos (QIM)']
+    data['Soma das métricas'] = data['Negociação'] + data['Portfólio'] + data['Relacional'] + data['Processos']
     data.rename(columns={'Classificação': 'Papel de atuação em rede'}, inplace=True)
 
     
     # Sidebar with filters
     st.sidebar.title('Filtros')
+    selected_category = st.sidebar.selectbox('Papel da Rede', ["Diamante", "Ouro", "Prata"], index=0)
     selected_unity = st.sidebar.selectbox('Unidade', data['Unidade EMBRAPII'].dropna().unique())
-    selected_category = st.sidebar.selectbox('Categoria', ["Diamante", "Ouro"], index=0)
-    selected_dimension = st.sidebar.selectbox('Dimensões', ['Negociação', 'Portfólio', 'Relacional', 'Processos (QIM)'])
-    selected_tematicas = st.sidebar.multiselect('Temáticas', data['CLASSIFICAÇÃO TEMÁTICA EMBRAPII'].dropna().unique())
+    selected_dimension = st.sidebar.selectbox('Dimensão', ['Negociação', 'Portfólio', 'Relacional', 'Processos'])
+    selected_tematicas = st.sidebar.multiselect('Temática', data['CLASSIFICAÇÃO TEMÁTICA EMBRAPII'].dropna().unique())
     selected_tipoue = st.sidebar.multiselect('Tipo da UE', data['TIPO DE INSTITUIÇÃO'].dropna().unique())
 
     # Apply filters
     dimension_value = data.loc[data['Unidade EMBRAPII'] == selected_unity, selected_dimension].values[0]
     if 'Diamante' in selected_category:
         filtered_class_data = data[data['Papel de atuação em rede'].isin(['DIAMANTE', 'OURO', 'PRATA', 'BRONZE'])]
-    else:
+    elif 'Ouro' in selected_category:
         filtered_class_data = data[data['Papel de atuação em rede'].isin(['OURO', 'PRATA', 'BRONZE'])]
+    else:
+        filtered_class_data = data[data['Papel de atuação em rede'].isin(['PRATA', 'BRONZE'])]
 
     dimension_value = data.loc[data['Unidade EMBRAPII'] == selected_unity, selected_dimension].values[0]
     filtered_data = filtered_class_data[filtered_class_data[selected_dimension] < dimension_value]
