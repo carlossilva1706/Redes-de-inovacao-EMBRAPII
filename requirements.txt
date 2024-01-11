@@ -1,0 +1,7 @@
+streamlit_wordcloud
+streamlit 
+pandas 
+matplotlib 
+plotly 
+wordcloud
+openpyxl
