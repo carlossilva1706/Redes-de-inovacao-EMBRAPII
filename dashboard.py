@@ -55,7 +55,10 @@ if uploaded_file is not None:
         fig_scatter = px.scatter_3d(filtered_data, x='Negociação', y='Portfólio', z='Relacional',
               color='Papel de atuação em rede', size='Soma das métricas',
               color_discrete_map=color_discrete_map,
-              hover_name="Unidade EMBRAPII")
+              hover_name="Unidade EMBRAPII",
+              custom_data=['Unidade EMBRAPII'])
+        hover_template = '%{customdata[0]}'
+        fig_scatter.update_traces(hovertemplate=hover_template)
         fig_scatter.update_scenes(xaxis_visible=False, yaxis_visible=False, zaxis_visible=False)
         col1.plotly_chart(fig_scatter, use_container_width=True)
         
