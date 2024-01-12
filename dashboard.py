@@ -1,5 +1,6 @@
 import streamlit as st
 import pandas as pd
+import numpy as np
 import plotly.express as px
 
 st.markdown("""
@@ -19,13 +20,12 @@ if uploaded_file is not None:
     # Sidebar with filters
     st.sidebar.title('Filtros')
     selected_category = st.sidebar.selectbox('Papel da Rede', ["Diamante", "Ouro", "Prata"], index=0)
-    selected_unity = st.sidebar.selectbox('Unidade', data['Unidade EMBRAPII'].dropna().unique())
+    selected_unity = st.sidebar.selectbox('Unidade', np.insert(data['Unidade EMBRAPII'].dropna().unique(), 0, "Todas", axis=0))
     selected_dimension = st.sidebar.selectbox('Dimensão', ['Negociação', 'Portfólio', 'Relacional', 'Processos'])
     selected_tematicas = st.sidebar.multiselect('Temática', data['CLASSIFICAÇÃO TEMÁTICA EMBRAPII'].dropna().unique())
     selected_tipoue = st.sidebar.multiselect('Tipo da UE', data['TIPO DE INSTITUIÇÃO'].dropna().unique())
 
     # Apply filters
-    dimension_value = data.loc[data['Unidade EMBRAPII'] == selected_unity, selected_dimension].values[0]
     if 'Diamante' in selected_category:
         filtered_class_data = data[data['Papel de atuação em rede'].isin(['DIAMANTE', 'OURO', 'PRATA', 'BRONZE'])]
     elif 'Ouro' in selected_category:
@@ -33,8 +33,11 @@ if uploaded_file is not None:
     else:
         filtered_class_data = data[data['Papel de atuação em rede'].isin(['PRATA', 'BRONZE'])]
 
-    dimension_value = data.loc[data['Unidade EMBRAPII'] == selected_unity, selected_dimension].values[0]
-    filtered_data = filtered_class_data[filtered_class_data[selected_dimension] < dimension_value]
+    if 'Todas' in selected_unity:
+        filtered_data = filtered_class_data
+    else:
+        dimension_value = data.loc[data['Unidade EMBRAPII'] == selected_unity, selected_dimension].values[0]
+        filtered_data = filtered_class_data[filtered_class_data[selected_dimension] < dimension_value]
 
     if selected_tematicas:
         filtered_data = filtered_data[filtered_data['CLASSIFICAÇÃO TEMÁTICA EMBRAPII'].isin(selected_tematicas)]
