@@ -27,17 +27,15 @@ if uploaded_file is not None:
 
     # Apply filters
     if 'Diamante' in selected_category:
-        filtered_class_data = data[data['Papel de atuação em rede'].isin(['DIAMANTE', 'OURO', 'PRATA', 'BRONZE'])]
+        filtered_data = data[data['Papel de atuação em rede'].isin(['DIAMANTE', 'OURO', 'PRATA', 'BRONZE'])]
     elif 'Ouro' in selected_category:
-        filtered_class_data = data[data['Papel de atuação em rede'].isin(['OURO', 'PRATA', 'BRONZE'])]
+        filtered_data = data[data['Papel de atuação em rede'].isin(['OURO', 'PRATA', 'BRONZE'])]
     else:
-        filtered_class_data = data[data['Papel de atuação em rede'].isin(['PRATA', 'BRONZE'])]
+        filtered_data = data[data['Papel de atuação em rede'].isin(['PRATA', 'BRONZE'])]
 
-    if 'Todas' in selected_unity:
-        filtered_data = filtered_class_data
-    else:
+    if 'Todas' not in selected_unity:
         dimension_value = data.loc[data['Unidade EMBRAPII'] == selected_unity, selected_dimension].values[0]
-        filtered_data = filtered_class_data[filtered_class_data[selected_dimension] <= dimension_value]
+        filtered_data = filtered_data[filtered_data[selected_dimension] <= dimension_value]
 
     if selected_tematicas:
         filtered_data = filtered_data[filtered_data['CLASSIFICAÇÃO TEMÁTICA EMBRAPII'].isin(selected_tematicas)]
