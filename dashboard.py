@@ -37,7 +37,7 @@ if uploaded_file is not None:
         filtered_data = filtered_class_data
     else:
         dimension_value = data.loc[data['Unidade EMBRAPII'] == selected_unity, selected_dimension].values[0]
-        filtered_data = filtered_class_data[filtered_class_data[selected_dimension] < dimension_value]
+        filtered_data = filtered_class_data[filtered_class_data[selected_dimension] <= dimension_value]
 
     if selected_tematicas:
         filtered_data = filtered_data[filtered_data['CLASSIFICAÇÃO TEMÁTICA EMBRAPII'].isin(selected_tematicas)]
@@ -64,7 +64,7 @@ if uploaded_file is not None:
         
         # Treemap
         treemap_data = filtered_data.groupby(['Papel de atuação em rede']).size().reset_index(name='Count')
-        fig_treemap = px.treemap(treemap_data, path=['Papel de atuação em rede'], values='Count')
+        fig_treemap = px.treemap(treemap_data, path=['Papel de atuação em rede'], values='Count', color='Papel de atuação em rede', color_discrete_map=color_discrete_map)
         col2.plotly_chart(fig_treemap, use_container_width=True)
 
         # Display table with selected columns
