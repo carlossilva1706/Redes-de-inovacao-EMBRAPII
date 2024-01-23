@@ -3,6 +3,9 @@ import pandas as pd
 import numpy as np
 import plotly.express as px
 
+embrapii_logo = "https://embrapii.org.br/wp-content/images/2018/10/logo-embrapii-square.png"
+with st.columns(3)[1]:
+    st.image(embrapii_logo, use_column_width=True)
 st.markdown("""
     <h1 style='text-align: center;'>Redes de inovação EMBRAPII</h1>
 """, unsafe_allow_html=True)
@@ -19,6 +22,7 @@ if uploaded_file is not None:
     
     # Sidebar with filters
     st.sidebar.title('Filtros')
+
     selected_category = st.sidebar.selectbox('Papel da Rede', ["Diamante", "Ouro", "Prata"], index=0)
     selected_unity = st.sidebar.selectbox('Unidade', np.insert(data['Unidade EMBRAPII'].dropna().unique(), 0, "Todas", axis=0))
     selected_dimension = st.sidebar.selectbox('Dimensão', ['Negociação', 'Portfólio', 'Relacional', 'Processos'])
@@ -32,11 +36,22 @@ if uploaded_file is not None:
         filtered_data = data[data['Papel de atuação em rede'].isin(['OURO', 'PRATA', 'BRONZE'])]
     else:
         filtered_data = data[data['Papel de atuação em rede'].isin(['PRATA', 'BRONZE'])]
-
+    
+    
+    col1,col2,col3 = st.columns(3)
     if 'Todas' not in selected_unity:
-        dimension_value = data.loc[data['Unidade EMBRAPII'] == selected_unity, selected_dimension].values[0]
-        filtered_data = filtered_data[filtered_data[selected_dimension] <= dimension_value]
-
+        with col1:
+            if st.button('Mentorado'):
+                dimension_value = data.loc[data['Unidade EMBRAPII'] == selected_unity, selected_dimension].values[0]
+                filtered_data = filtered_data[filtered_data[selected_dimension] > dimension_value]
+        with col2:
+            if st.button('Mentor'):
+                dimension_value = data.loc[data['Unidade EMBRAPII'] == selected_unity, selected_dimension].values[0]
+                filtered_data = filtered_data[filtered_data[selected_dimension] <= dimension_value]
+        with col3:   
+            if st.button('Participante'):
+                filtered_data = filtered_data  
+                
     if selected_tematicas:
         filtered_data = filtered_data[filtered_data['CLASSIFICAÇÃO TEMÁTICA EMBRAPII'].isin(selected_tematicas)]
     if selected_tipoue:
@@ -47,7 +62,7 @@ if uploaded_file is not None:
     if not filtered_data.empty:
         # Create two columns
         col1, col2 = st.columns(2)
-        
+    
         # Scatter Plot
         color_discrete_map = {'DIAMANTE': 'rgb(185,242,255)', 'OURO': 'rgb(255,215,0)', 'PRATA': 'rgb(192,192,192)', 'BRONZE': 'rgb(184,115,51)'}
         fig_scatter = px.scatter_3d(filtered_data, x='Negociação', y='Portfólio', z='Relacional',
